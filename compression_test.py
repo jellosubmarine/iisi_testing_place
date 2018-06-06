@@ -3,6 +3,7 @@ import numpy as np
 from numpy import unique
 from scipy.stats import entropy as scipy_entropy
 from huffman import HuffmanCoding
+import os
 
 def shannon_entropy(image, base=2):
     _, counts = unique(image, return_counts=True)
@@ -63,17 +64,18 @@ img = img[:,:,0]
 img = delta_encode(img)
 
 # #Huffman encoding
-# h = HuffmanCoding(img)
-
+h = HuffmanCoding(img, os.getcwd() + "/test")
+h.compress()
+img = h.decompress(os.getcwd()+"/test.bin")
 # output_path = h.compress()
 # img = h.decompress(output_path)
 
 # #convert back to original
 img = delta_decode(img)
 
-# cv2.namedWindow("deltaback", cv2.WINDOW_NORMAL)
-# cv2.resizeWindow("deltaback", 1000, 1000)
-# cv2.imshow("deltaback", img)
+cv2.namedWindow("deltaback", cv2.WINDOW_NORMAL)
+cv2.resizeWindow("deltaback", 1000, 1000)
+cv2.imshow("deltaback", img)
 
 print "Redecoded entropy: "
 print shannon_entropy(img)

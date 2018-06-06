@@ -23,6 +23,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+.vscode/
 MANIFEST
 
 # PyInstaller
@@ -104,3 +105,4 @@ venv.bak/
 .mypy_cache/
 
 images/
+*.bin
