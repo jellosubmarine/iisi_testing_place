@@ -49,6 +49,7 @@ def delta_decode(img):
 
 img = cv2.imread("images/amazon_gray.png")
 img = img[:,:,0]
+# img.tofile(os.getcwd() + "/raw.bin")
 #show original
 # cv2.namedWindow("original", cv2.WINDOW_NORMAL)
 # cv2.resizeWindow("original", 1000, 1000)

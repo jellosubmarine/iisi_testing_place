@@ -1,6 +1,15 @@
 import heapq
 import os
 import numpy as np
+import pickle
+
+def save_obj(obj, name ):
+    with open('obj/'+ name + '.pkl', 'wb') as f:
+        pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
+
+def load_obj(name ):
+    with open('obj/' + name + '.pkl', 'rb') as f:
+        return pickle.load(f)
 
 class HeapNode:
 	def __init__(self, char, freq):
@@ -113,7 +122,7 @@ class HuffmanCoding:
 
 			b = self.get_byte_array(padded_encoded_text)
 			output.write(bytes(b))
-
+		save_obj(self.reverse_mapping, "dict")
 		print "Compressed"
 		return output_path
 
@@ -131,19 +140,15 @@ class HuffmanCoding:
 
 	def decode_text(self, encoded_text):
 		current_code = ""
-		print self.img_size
 		decoded_img = np.zeros(self.img_size[0]*self.img_size[1]).astype(np.int)
 		i = 0
 		for bit in encoded_text:
 			current_code += bit
-			try:
-				if(current_code in self.reverse_mapping):
-					character = self.reverse_mapping[current_code]
-					decoded_img[i] = character
-					current_code = ""
-					i += 1
-			except:
-				print i
+			if(current_code in self.reverse_mapping):
+				character = self.reverse_mapping[current_code]
+				decoded_img[i] = character
+				current_code = ""
+				i += 1
 		decoded_img = decoded_img.reshape(self.img_size)
 		return decoded_img
 
