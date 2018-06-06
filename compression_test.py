@@ -26,31 +26,23 @@ def delta_encode(img):
             encoded[i,j] = current - last
             last = current
     
-
-    first_orig = abs(encoded.min())
-    converting_factor = first_orig
-    encoded = encoded + converting_factor
     print "Encoded entropy: "
     print shannon_entropy(encoded)
-    encoded = np.uint8(encoded)
     
-    return encoded, converting_factor, first_orig
+    return encoded
 
-def delta_decode(img, converting_factor, first_orig):
+def delta_decode(img):
     decoded = np.zeros_like(img)
     decoded = decoded.astype(np.float)
-    img = img.astype(float)
-    img = img - converting_factor
-    last = first_orig
+    img = img.astype(np.float)
+    last = 0
     for i in range(0, decoded.shape[0]):
         for j in range(0, decoded.shape[1]):
             current = float(img[i,j])
             decoded[i,j] = current + last
-            # if decoded[i,j] > 255 or decoded[i,j] < 0:
-            #     print "fuk"
 
             last = decoded[i,j]
-    decoded = np.uint8(decoded)
+    decoded = decoded.astype(np.uint8)
     return decoded
 
 
@@ -61,17 +53,21 @@ cv2.namedWindow("original", cv2.WINDOW_NORMAL)
 cv2.resizeWindow("original", 1000, 1000)
 cv2.imshow("original", img)
 
-#show delta
-img, converting_factor, first_orig = delta_encode(img)
-cv2.namedWindow("delta", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("delta", 1000, 1000)
-cv2.imshow("delta", img)
-print converting_factor
+# #show delta
+# img, converting_factor, first_orig = delta_encode(img)
+# cv2.namedWindow("delta", cv2.WINDOW_NORMAL)
+# cv2.resizeWindow("delta", 1000, 1000)
+# cv2.imshow("delta", img)
+# print converting_factor
 #convert back to original
-img = delta_decode(img, converting_factor, first_orig)
+img = delta_encode(img)
+img = delta_decode(img)
 cv2.namedWindow("deltaback", cv2.WINDOW_NORMAL)
 cv2.resizeWindow("deltaback", 1000, 1000)
 cv2.imshow("deltaback", img)
+
+print "Redecoded entropy: "
+print shannon_entropy(img)
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
