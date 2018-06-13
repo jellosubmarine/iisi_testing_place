@@ -4,6 +4,7 @@ from numpy import unique
 from scipy.stats import entropy as scipy_entropy
 from huffman import HuffmanCoding
 import os
+import glob
 
 def shannon_entropy(image, base=2):
     _, counts = unique(image, return_counts=True)
@@ -48,38 +49,68 @@ def delta_decode(img):
 
 
 img = cv2.imread("images/amazon_gray.png")
-img = img[:,:,0]
-# img.tofile(os.getcwd() + "/raw.bin")
-#show original
-# cv2.namedWindow("original", cv2.WINDOW_NORMAL)
-# cv2.resizeWindow("original", 1000, 1000)
-# cv2.imshow("original", img)
+# img = img[:,:,0]
+# # img.tofile(os.getcwd() + "/raw.bin")
+# #show original
+# # cv2.namedWindow("original", cv2.WINDOW_NORMAL)
+# # cv2.resizeWindow("original", 1000, 1000)
+# # cv2.imshow("original", img)
 
-# #show delta
-# img, converting_factor, first_orig = delta_encode(img)
-# cv2.namedWindow("delta", cv2.WINDOW_NORMAL)
-# cv2.resizeWindow("delta", 1000, 1000)
-# cv2.imshow("delta", img)
-# print converting_factor
+# # #show delta
+# # img, converting_factor, first_orig = delta_encode(img)
+# # cv2.namedWindow("delta", cv2.WINDOW_NORMAL)
+# # cv2.resizeWindow("delta", 1000, 1000)
+# # cv2.imshow("delta", img)
+# # print converting_factor
 
-img = delta_encode(img)
+# img = delta_encode(img)
 
-# #Huffman encoding
-h = HuffmanCoding(img, os.getcwd() + "/test")
-h.compress()
-img = h.decompress(os.getcwd()+"/test.bin")
-# output_path = h.compress()
-# img = h.decompress(output_path)
+# # #Huffman encoding
+# h = HuffmanCoding(img, os.getcwd() + "/test")
+# h.compress()
+# img = h.decompress(os.getcwd()+"/test.bin")
+# # output_path = h.compress()
+# # img = h.decompress(output_path)
 
-# #convert back to original
-img = delta_decode(img)
+# # #convert back to original
+# img = delta_decode(img)
 
-cv2.namedWindow("deltaback", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("deltaback", 1000, 1000)
-cv2.imshow("deltaback", img)
+# # cv2.namedWindow("deltaback", cv2.WINDOW_NORMAL)
+# # cv2.resizeWindow("deltaback", 1000, 1000)
+# # cv2.imshow("deltaback", img)
 
-print "Redecoded entropy: "
-print shannon_entropy(img)
+# print "Redecoded entropy: "
+# print shannon_entropy(img)
+
+filenames = glob.glob("images/*.png")
+
+images = [cv2.imread(img) for img in filenames]
+
+sum_ratio = 0
+
+for img in images:
+    img = img[:,:,0]
+    img = delta_encode(img)
+    h = HuffmanCoding(img, os.getcwd() + "/test")
+    h.compress()
+    img = h.decompress(os.getcwd()+"/test.bin")
+    img = delta_decode(img)
+
+    rawsize = os.stat('raw.bin')
+    testsize = os.stat('test.bin')
+
+    ratio = float(float(testsize.st_size)/float(rawsize.st_size))
+    sum_ratio += ratio
+
+    print "Redecoded entropy: "
+    print shannon_entropy(img)
+
+    print "Compression ratio: "
+    print ratio
+
+avg_ratio = sum_ratio/len(images)
+print "Average ratio: "
+print avg_ratio
 
 cv2.waitKey(0)
 cv2.destroyAllWindows()
